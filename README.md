@@ -79,7 +79,7 @@ cd my-personal-portal
 + プロジェクトの要件定義や開発方針を整理するために `REQUIREMENTS.md` を作成します。
 ```bash
 # REQUIREMENTS.mdの作成(要件定義書)
-toch REQUIREMENTS.md
+touch REQUIREMENTS.md
 
 # VS Codeで開いて作成
 code REQUIREMENTS.md
