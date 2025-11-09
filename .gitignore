@@ -50,3 +50,9 @@ venv/
 
 # その他
 .env
+
+# pytest
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*

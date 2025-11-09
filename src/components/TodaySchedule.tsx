@@ -3,6 +3,7 @@ import { CalendarDays, Trash2 } from 'lucide-react';
 import React from 'react';
 
 // フォーマット関数を定義
+// 2025-11-09T12:34:56.789Z -> 2025月11月09日 12:34
 const formatDateTime = (dateTimeString: string): string => {
 	const date = new Date(dateTimeString);
 	const year = date.getFullYear();

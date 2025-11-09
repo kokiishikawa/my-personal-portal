@@ -9,20 +9,16 @@ export const useSchedule = () => {
 	const [todaySchedules, setTodaySchedules] = useState<Schedule[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-
-	// 今日の日付情報
-	const today = new Date();
-	const dateStr = `${today.getFullYear()}年${
-		today.getMonth() + 1
-	}月${today.getDate()}日`;
-	const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-	const dayOfWeek = weekdays[today.getDay()];
+	
+	// 日付情報をstateで管理
+	const [dateStr, setDateStr] = useState('');
+	const [dayOfWeek, setDayOfWeek] = useState('');
+	const [todayDate, setTodayDate] = useState<Date | null>(null);
 
 	/**
 	 * 予定一覧を取得
 	 */
 	const fetchSchedules = async () => {
-		
 	};
 
 	/**
@@ -77,14 +73,23 @@ export const useSchedule = () => {
 	};
 
 	const isToday = (day: number | null): boolean => {
-		if (!day) return false;
-		const today = new Date();
+		if (!day || !todayDate) return false; // todayDateがnullの場合はfalse
 		return (
-			day === today.getDate() &&
-			currentMonth.getMonth() === today.getMonth() &&
-			currentMonth.getFullYear() === today.getFullYear()
+			day === todayDate.getDate() &&
+			currentMonth.getMonth() === todayDate.getMonth() &&
+			currentMonth.getFullYear() === todayDate.getFullYear()
 		);
 	};
+
+	// クライアントサイドで日付情報を設定
+	useEffect(() => {
+		const today = new Date();
+		setTodayDate(today); // 今日の日付を保存
+		setDateStr(`${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`);
+		
+		const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+		setDayOfWeek(weekdays[today.getDay()]);
+	}, []);
 
 	// 初回読み込み
 	useEffect(() => {
