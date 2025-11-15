@@ -67,6 +67,7 @@ export const useSchedule = () => {
 	 */
 	const addSchedule = async (schedule: {
 		title: string;
+		memo: ''
 		location: string;
 		date: string;
 	}): Promise<Schedule> => {
@@ -86,6 +87,7 @@ export const useSchedule = () => {
 					},
 					body: JSON.stringify({
 						title: schedule.title,
+						memo: schedule.memo,
 						location: schedule.location,
 						date: isoDate, // ISO形式で送信
 					}),
@@ -119,6 +121,7 @@ export const useSchedule = () => {
 	 * スケジュールを編集
 	 * @param {number} scheduleId - スケジュールID
 	 * @param {string} title - スケジュールのタイトル
+	 * @param {string} memo - スケジュールのメモ
 	 * @param {string} location - 場所
 	 * @param {string} date - 日時（ISO形式）
 	 * @returns {Promise<Schedule>} 更新されたスケジュール

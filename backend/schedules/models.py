@@ -3,6 +3,7 @@ from django.db import models
 class Schedule(models.Model):
     """スケジュールモデル"""
     title = models.CharField(max_length=255, verbose_name='タイトル')
+    memo = models.CharField(max_length=255, blank=True, null=True, verbose_name='メモ')
     location = models.CharField(max_length=255, verbose_name='場所')
     date = models.DateTimeField(verbose_name='時間')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日')
