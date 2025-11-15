@@ -1,0 +1,55 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:14
+    container_name: myportal_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ishikawakoki
+      POSTGRES_PASSWORD: asuka
+      POSTGRES_DB: myportal_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build:
+      context: ./backend
+    container_name: myportal_django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app
+    ports:
+      - '8000:8000'
+    environment:
+      - POSTGRES_USER=ishikawakoki
+      - POSTGRES_PASSWORD=asuka
+      - POSTGRES_DB=myportal_db
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: myportal_next
+    command: npm run dev
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - '3000:3000'
+    depends_on:
+      - web
+    environment:
+      - WATCHPACK_POLLING=true
+
+volumes:
+  postgres_data:
