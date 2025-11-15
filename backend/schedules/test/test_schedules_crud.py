@@ -7,6 +7,7 @@ def test_schedules_crud(api_client):
     test_date = timezone.now().isoformat()
     res = api_client.post('/api/schedules/', {
         'title': 'Test',
+        'memo': '',
         'location': 'location',
         'date': test_date
     }, format='json')
@@ -14,6 +15,7 @@ def test_schedules_crud(api_client):
     schedules_id = res.data['id']
     # 作成されたデータを検証
     assert res.data['title'] == 'Test'
+    assert res.data['memo'] == ''
     assert res.data['location'] == 'location'
 
     # 全体表示
@@ -27,12 +29,14 @@ def test_schedules_crud(api_client):
     assert res.status_code == 200
     # 正しいデータが取得できたか確認
     assert res.data['id'] == schedules_id
+    assert res.data['memo'] == ''
     assert res.data['title'] == 'Test'
 
     # 更新
     updated_date = timezone.now().isoformat()
     res = api_client.put(f'/api/schedules/{schedules_id}/', {
         'title': 'Updated',
+        'memo': 'Updated memo',
         'location': 'Updated location',
         'date': updated_date
     }, format='json')
