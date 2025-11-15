@@ -8,11 +8,12 @@ import Calendar from '@/components/Calendar';
 import TaskList from '@/components/TaskList';
 import TaskModal from '@/components/modals/TaskModal';
 import ScheduleModal from '@/components/modals/ScheduleModal';
-import TodaySchedule from '@/components/TodaySchedule';
+import TodaySchedule from '@/components/ScheduleList';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { useTasks } from '@/hooks/useTasks';
 import { useSchedule } from '@/hooks/useSchedule';
 import EditTaskModal from '@/components/modals/EditTaskModal';
+import EditScheduleModal from '@/components/modals/EditScheduleModal'
 
 /**
  * ホームページコンポーネント
@@ -25,6 +26,10 @@ export default function HomePage() {
 	const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
 	const [editTaskModal, setEditTaskModal] = useState(false);
 	const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
+	const [editScheduleModal, setEditScheduleModal] = useState(false);
+	const [editingScheduleId, setEditingScheduleId] = useState<number | null>(
+		null
+	);
 
 	// モーダル入力フォームの状態
 	const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -49,6 +54,7 @@ export default function HomePage() {
 		isToday,
 		deleteSchedule,
 		addSchedule,
+		editSchedule,
 	} = useSchedule();
 
 	// ブックマーク一覧(デモデータ)
@@ -129,6 +135,10 @@ export default function HomePage() {
 					todaySchedules={todaySchedules}
 					onScheduleModalOpen={setScheduleModalOpen}
 					deleteSchedule={deleteSchedule}
+					onEditScheduleOpen={(id) => {
+						setEditingScheduleId(id);
+						setEditScheduleModal(true);
+					}}
 				/>
 
 				{/* カレンダーとタスクリストのグリッド */}
@@ -195,6 +205,17 @@ export default function HomePage() {
 					editingTaskId={editingTaskId}
 					onEditTaskModalOpen={setEditTaskModal}
 					editTask={editTask}
+				/>
+			)}
+
+			{/* スケジュール編集モーダル */}
+			{editScheduleModal && editingScheduleId !== null && (
+				<EditScheduleModal
+					darkMode={darkMode}
+					schedules={todaySchedules}
+					editingSheduleId={editingScheduleId}
+					onEditSheduleModalOpen={setEditScheduleModal}
+					editShedule={editSchedule}
 				/>
 			)}
 

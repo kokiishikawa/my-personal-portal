@@ -1,30 +1,18 @@
 import { TodyScheduleProps } from '@/types';
-import { CalendarDays, Trash2 } from 'lucide-react';
+import { formatDateTime } from '@/utils/dateUtils';
+import { CalendarDays, Edit, Trash2 } from 'lucide-react';
 import React from 'react';
-
-// フォーマット関数を定義
-// 2025-11-09T12:34:56.789Z -> 2025月11月09日 12:34
-const formatDateTime = (dateTimeString: string): string => {
-	const date = new Date(dateTimeString);
-	const year = date.getFullYear();
-	const month = date.getMonth() + 1;
-	const day = date.getDate();
-	const hours = date.getHours();
-	const minutes = date.getMinutes().toString().padStart(2, '0');
-
-	return `${year}年${month}月${day}日 ${hours}:${minutes}`;
-};
 
 /**
  * カレンダーを表示するコンポーネント
  */
-const TodaySchedule = ({
+const ScheduleList = ({
 	darkMode,
 	todaySchedules,
 	onScheduleModalOpen,
 	deleteSchedule,
+	onEditScheduleOpen,
 }: TodyScheduleProps) => {
-	
 	// 当日の予定のみ取得して時間が早い順にソート
 	const todaySchedulesFiltered = todaySchedules
 		.filter((schedule) => {
@@ -79,16 +67,35 @@ const TodaySchedule = ({
 									>
 										{schedule.title}
 									</h3>
-									<button
-										onClick={() => deleteSchedule(schedule.id)}
-										className={`opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
-											darkMode
-												? 'hover:bg-gray-600 text-red-400'
-												: 'hover:bg-gray-200 text-red-500'
-										}`}
-									>
-										<Trash2 size={18} />
-									</button>
+									<div className="flex gap-1">
+										{/* 編集ボタン */}
+										{onEditScheduleOpen && (
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													onEditScheduleOpen(schedule.id);
+												}}
+												className={`opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
+													darkMode
+														? 'hover:bg-gray-600 text-blue-400'
+														: 'hover:bg-gray-200 text-blue-500'
+												}`}
+											>
+												<Edit size={18} />
+											</button>
+										)}
+										{/* 削除ボタン */}
+										<button
+											onClick={() => deleteSchedule(schedule.id)}
+											className={`opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
+												darkMode
+													? 'hover:bg-gray-600 text-red-400'
+													: 'hover:bg-gray-200 text-red-500'
+											}`}
+										>
+											<Trash2 size={18} />
+										</button>
+									</div>
 								</div>
 								<div
 									className={`flex flex-col gap-1 text-sm ${
@@ -133,4 +140,4 @@ const TodaySchedule = ({
 	);
 };
 
-export default TodaySchedule;
+export default ScheduleList;

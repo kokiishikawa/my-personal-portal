@@ -8,6 +8,7 @@ export interface Task {
 export interface Schedule {
 	id: number;
 	title: string;
+	memo: string;
 	location: string;
 	date: string;
 }
@@ -46,7 +47,7 @@ export interface CalendarProps {
 export interface TaskListProps {
 	darkMode: boolean;
 	tasks: Task[];
-	toggleTask: (id: number) => void;
+	toggleTask: (taskId: number) => void;
 	deleteTask: (id: number) => void;
 	onModalOpen: (isOpen: boolean) => void;
 	onEditTaskOpen?: (id: number) => void;
@@ -57,6 +58,7 @@ export interface TodyScheduleProps {
 	todaySchedules: Schedule[];
 	onScheduleModalOpen: (isOpen: boolean) => void;
 	deleteSchedule: (id: number) => void;
+	onEditScheduleOpen?: (id: number) => void;
 }
 
 export interface TaskModalProps {
@@ -95,4 +97,12 @@ export interface EditTaskModalProps {
 	editingTaskId: number;
 	onEditTaskModalOpen: (isOpen: boolean) => void;
 	editTask: (id: number, newTitle: string, newDetail: string) => void;
+}
+
+export interface EditScheduleModalProps {
+	darkMode: boolean;
+	schedules: Schedule[];
+	editingSheduleId: number;
+	onEditSheduleModalOpen: (isOpen: boolean) => void;
+	editShedule: (id: number, newTitle: string, newMemo: string, newLocation: string, newDate: string) => void;
 }
