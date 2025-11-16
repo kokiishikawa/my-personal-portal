@@ -67,7 +67,7 @@ export const useSchedule = () => {
 	 */
 	const addSchedule = async (schedule: {
 		title: string;
-		memo: ''
+		memo?: string;
 		location: string;
 		date: string;
 	}): Promise<Schedule> => {

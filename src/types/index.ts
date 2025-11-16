@@ -8,7 +8,7 @@ export interface Task {
 export interface Schedule {
 	id: number;
 	title: string;
-	memo: string;
+	memo?: string;
 	location: string;
 	date: string;
 }
