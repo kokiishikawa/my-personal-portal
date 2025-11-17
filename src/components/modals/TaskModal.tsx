@@ -1,3 +1,5 @@
+'use client';
+
 import { TaskModalProps } from '@/types';
 import { X } from 'lucide-react';
 import React from 'react';

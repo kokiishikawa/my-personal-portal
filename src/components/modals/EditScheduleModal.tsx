@@ -1,3 +1,5 @@
+'use client';
+
 import { EditScheduleModalProps } from '@/types';
 import { formatDateTimeLocal } from '@/utils/dateUtils';
 import { X } from 'lucide-react';

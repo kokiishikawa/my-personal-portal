@@ -1,3 +1,5 @@
+'use client';
+
 import { EditTaskModalProps } from '@/types';
 import { X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';

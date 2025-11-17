@@ -14,9 +14,10 @@ export interface Schedule {
 }
 
 export interface Bookmark {
+	id: number;
 	name: string;
 	url: string;
-	iconImage: string;
+	iconEmoji?: string;
 	color: string;
 }
 
@@ -25,6 +26,8 @@ export interface BookmarkProps {
 	bookmarks: Bookmark[];
 	onToggleMenu: () => void;
 	isMenuOpen: boolean;
+	onBookmarkModalOpne: (isOpen: boolean) => void;
+	onEditBookmarkOpen?: (id: number) => void;
 }
 
 export interface HeaderProps {
@@ -104,5 +107,52 @@ export interface EditScheduleModalProps {
 	schedules: Schedule[];
 	editingSheduleId: number;
 	onEditSheduleModalOpen: (isOpen: boolean) => void;
-	editShedule: (id: number, newTitle: string, newMemo: string, newLocation: string, newDate: string) => void;
+	editShedule: (
+		id: number,
+		newTitle: string,
+		newMemo: string,
+		newLocation: string,
+		newDate: string
+	) => void;
+}
+
+export interface BookmarkModalProps {
+	darkMode: boolean;
+	onBookmarkModalOpne: (isOpen: boolean) => void;
+	newBookmark: {
+		name: string;
+		url: string;
+		iconEmoji: string;
+		color: string;
+	};
+	setNewBookmark: React.Dispatch<
+		React.SetStateAction<{
+			name: string;
+			url: string;
+			iconEmoji: string;
+			color: string;
+		}>
+	>;
+	onAddBookmark: (bookmark: {
+		name: string;
+		url: string;
+		iconEmoji: string;
+		color: string;
+	}) => void;
+}
+
+export interface EditBookmarkModalProps {
+	darkMode: boolean;
+	bookmarks: Bookmark[];
+	editingBookmarkId: number | null;
+	onEditBookmarkModalOpen: (open: boolean) => void;
+	editBookmark: (
+		id: number,
+		bookmarkData: {
+			name: string;
+			url: string;
+			iconEmoji: string;
+			color: string;
+		}
+	) => void;
 }

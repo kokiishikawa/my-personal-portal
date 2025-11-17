@@ -1,3 +1,5 @@
+'use client';
+
 import { ScheduleModalProps } from '@/types';
 import { X } from 'lucide-react';
 import React from 'react';

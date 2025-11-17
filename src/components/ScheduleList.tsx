@@ -1,3 +1,5 @@
+'use client';
+
 import { TodyScheduleProps } from '@/types';
 import { formatDateTime } from '@/utils/dateUtils';
 import { CalendarDays, Edit, Trash2 } from 'lucide-react';

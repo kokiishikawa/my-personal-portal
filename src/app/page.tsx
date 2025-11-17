@@ -13,7 +13,10 @@ import { useDarkMode } from '@/hooks/useDarkMode';
 import { useTasks } from '@/hooks/useTasks';
 import { useSchedule } from '@/hooks/useSchedule';
 import EditTaskModal from '@/components/modals/EditTaskModal';
-import EditScheduleModal from '@/components/modals/EditScheduleModal'
+import EditScheduleModal from '@/components/modals/EditScheduleModal';
+import { useBookmark } from '@/hooks/useBookmark';
+import BookmarkModal from '@/components/modals/BookmarkModal';
+import EditBookmarkModal from '@/components/modals/EditBookmarkModal';
 
 /**
  * ホームページコンポーネント
@@ -25,14 +28,27 @@ export default function HomePage() {
 	const [modalOpen, setModalOpen] = useState(false);
 	const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
 	const [editTaskModal, setEditTaskModal] = useState(false);
-	const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
 	const [editScheduleModal, setEditScheduleModal] = useState(false);
+	const [editBookmarkModal, setEditBookmarkModal] = useState(false);
+	const [BookmarkModalOpne, setBookmarkModalOpen] = useState(false);
+	
+	// 編集対象の状態
+	const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
+	const [editingBookmarkId, setEditingBookmarkId] = useState<number | null>(
+		null
+	);
 	const [editingScheduleId, setEditingScheduleId] = useState<number | null>(
 		null
 	);
 
 	// モーダル入力フォームの状態
 	const [newTaskTitle, setNewTaskTitle] = useState('');
+	const [newBookmark, setNewBookmark] = useState({
+		name: '',
+		url: '',
+		iconEmoji: '',
+		color: 'bg-blue-500',
+	});
 	const [newSchedule, setNewSchedule] = useState({
 		title: '',
 		location: '',
@@ -42,6 +58,7 @@ export default function HomePage() {
 	// カスタムフックから各機能を取得
 	const { darkMode, toggleDarkMode } = useDarkMode();
 	const { toggleTask, deleteTask, tasks, addTask, editTask } = useTasks();
+	const { addBookmark, editBookmark } = useBookmark();
 	const {
 		currentMonth,
 		todaySchedules,
@@ -60,46 +77,11 @@ export default function HomePage() {
 	// ブックマーク一覧(デモデータ)
 	const bookmarks: Bookmark[] = [
 		{
+			id: 1,
 			name: 'AWS Console',
 			url: 'https://console.aws.amazon.com',
-			iconImage: '',
+			iconEmoji: '',
 			color: 'bg-orange-500',
-		},
-		{
-			name: 'GitHub',
-			url: 'https://github.com',
-			iconImage: '',
-			color: 'bg-gray-800',
-		},
-		{
-			name: 'YouTube',
-			url: 'https://youtube.com',
-			iconImage: '',
-			color: 'bg-red-500',
-		},
-		{
-			name: 'Udemy',
-			url: 'https://udemy.com',
-			iconImage: '',
-			color: 'bg-purple-500',
-		},
-		{
-			name: 'Qiita',
-			url: 'https://qiita.com',
-			iconImage: '',
-			color: 'bg-green-500',
-		},
-		{
-			name: 'NogizakaBlog',
-			url: 'https://www.nogizaka46.com/s/n46/diary/MEMBER?ima=2328',
-			iconImage: '',
-			color: 'bg-fuchsia-500',
-		},
-		{
-			name: 'SakurazakaBlog',
-			url: 'https://sakurazaka46.com/s/s46/diary/blog/list?ima=0000',
-			iconImage: '🌸',
-			color: 'bg-pink-500',
 		},
 	];
 
@@ -172,7 +154,12 @@ export default function HomePage() {
 				darkMode={darkMode}
 				bookmarks={bookmarks}
 				onToggleMenu={() => setMenuOpen(!menuOpen)}
+				onBookmarkModalOpne={setBookmarkModalOpen}
 				isMenuOpen={menuOpen}
+				onEditBookmarkOpen={(id) => {
+					setEditingBookmarkId(id);
+					setEditBookmarkModal(true);
+				}}
 			/>
 
 			{/* タスク追加モーダル */}
@@ -216,6 +203,28 @@ export default function HomePage() {
 					editingSheduleId={editingScheduleId}
 					onEditSheduleModalOpen={setEditScheduleModal}
 					editShedule={editSchedule}
+				/>
+			)}
+
+			{/* ブックマーク編集モーダル */}
+			{editBookmarkModal && editingBookmarkId !== null && (
+				<EditBookmarkModal
+					darkMode={darkMode}
+					bookmarks={bookmarks}
+					editingBookmarkId={editingBookmarkId}
+					onEditBookmarkModalOpen={setEditBookmarkModal}
+					editBookmark={editBookmark}
+				/>
+			)}
+
+			{/* ブックマーク登録モーダル */}
+			{BookmarkModalOpne && (
+				<BookmarkModal
+					darkMode={darkMode}
+					onBookmarkModalOpne={setBookmarkModalOpen}
+					newBookmark={newBookmark}
+					setNewBookmark={setNewBookmark}
+					onAddBookmark={addBookmark}
 				/>
 			)}
 
