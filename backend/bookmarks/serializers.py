@@ -8,7 +8,7 @@ class BookmarkSerializer(serializers.ModelSerializer):
         model = Bookmark
 
         # JSONに含めるフィールド
-        fields = ['id', 'name', 'url', 'iconImage', 'color', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'url', 'iconEmoji', 'color', 'created_at', 'updated_at']
 
         # 読み取り専用フィールド
         read_only_fields = ['id', 'created_at', 'updated_at']
