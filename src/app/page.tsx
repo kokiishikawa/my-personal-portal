@@ -55,9 +55,10 @@ export default function HomePage() {
 	});
 
 	// カスタムフックから各機能を取得
-	const { darkMode, toggleDarkMode } = useDarkMode();
+	const { darkMode, toggleDarkMode, mounted } = useDarkMode();
 	const { toggleTask, deleteTask, tasks, addTask, editTask } = useTasks();
-	const { addBookmark, editBookmark, bookmarks, deleteBookmark } = useBookmark();
+	const { addBookmark, editBookmark, bookmarks, deleteBookmark } =
+		useBookmark();
 	const {
 		currentMonth,
 		todaySchedules,
@@ -72,6 +73,11 @@ export default function HomePage() {
 		addSchedule,
 		editSchedule,
 	} = useSchedule();
+
+	// マウント前は背景色のみ表示（ちらつき防止）
+	if (!mounted) {
+		return <div className="min-h-screen bg-gray-900" />;
+	}
 
 	return (
 		<div

@@ -23,9 +23,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
+    <html lang="ja" suppressHydrationWarning>
+      <head>
+        {/* ダークモード設定を即座に適用するスクリプト */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  let darkMode = localStorage.getItem('darkMode') === 'true';
+                  let root = document.documentElement;
+                  if (darkMode) {
+                    root.style.setProperty('background-color', '#1f2937', 'important');
+                  } else {
+                    root.style.setProperty('background-color', '#ffffff', 'important');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         {children}
       </body>

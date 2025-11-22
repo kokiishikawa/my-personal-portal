@@ -5,16 +5,21 @@ import { useEffect, useState } from 'react';
  * localStorageに設定を永続化する
  */
 export const useDarkMode = () => {
-	const [darkMode, setDarkMode] = useState(false);
+	// 初期値をlocalStorageから直接読み込む（SSR対応）
+	const [darkMode, setDarkMode] = useState(() => {
+		if (typeof window !== 'undefined') {
+			return localStorage.getItem('darkMode') === 'true';
+		}
+		return false;
+	});
+
+	const [mounted, setMounted] = useState(false);
 
 	/**
-	 * 初回読み込み時にlocalStorageから設定を復元
+	 * マウント完了を記録
 	 */
 	useEffect(() => {
-		const saved = localStorage.getItem('darkMode');
-		if (saved === 'true') {
-			setDarkMode(true);
-		}
+		setMounted(true);
 	}, []);
 
 	/**
@@ -27,5 +32,5 @@ export const useDarkMode = () => {
 		localStorage.setItem('darkMode', String(newDarkMode));
 	};
 
-	return { darkMode, toggleDarkMode };
+	return { darkMode, toggleDarkMode, mounted };
 };
