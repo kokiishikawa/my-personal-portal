@@ -56,7 +56,7 @@ export interface TaskListProps {
 	onEditTaskOpen?: (id: number) => void;
 }
 
-export interface TodyScheduleProps {
+export interface TodayScheduleProps {
 	darkMode: boolean;
 	todaySchedules: Schedule[];
 	onScheduleModalOpen: (isOpen: boolean) => void;
@@ -155,4 +155,5 @@ export interface EditBookmarkModalProps {
 			color: string;
 		}
 	) => void;
+	deleteBookmark: (id: number) => void;
 }

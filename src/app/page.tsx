@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Bookmark } from '@/types';
 import Header from '@/components/Header';
 import BookmarkSidebar from '@/components/BookmarkSidebar';
 import Calendar from '@/components/Calendar';
 import TaskList from '@/components/TaskList';
 import TaskModal from '@/components/modals/TaskModal';
 import ScheduleModal from '@/components/modals/ScheduleModal';
-import TodaySchedule from '@/components/ScheduleList';
+import ScheduleList from '@/components/ScheduleList';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { useTasks } from '@/hooks/useTasks';
 import { useSchedule } from '@/hooks/useSchedule';
@@ -31,7 +30,7 @@ export default function HomePage() {
 	const [editScheduleModal, setEditScheduleModal] = useState(false);
 	const [editBookmarkModal, setEditBookmarkModal] = useState(false);
 	const [BookmarkModalOpne, setBookmarkModalOpen] = useState(false);
-	
+
 	// 編集対象の状態
 	const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
 	const [editingBookmarkId, setEditingBookmarkId] = useState<number | null>(
@@ -58,7 +57,7 @@ export default function HomePage() {
 	// カスタムフックから各機能を取得
 	const { darkMode, toggleDarkMode } = useDarkMode();
 	const { toggleTask, deleteTask, tasks, addTask, editTask } = useTasks();
-	const { addBookmark, editBookmark } = useBookmark();
+	const { addBookmark, editBookmark, bookmarks, deleteBookmark } = useBookmark();
 	const {
 		currentMonth,
 		todaySchedules,
@@ -73,17 +72,6 @@ export default function HomePage() {
 		addSchedule,
 		editSchedule,
 	} = useSchedule();
-
-	// ブックマーク一覧(デモデータ)
-	const bookmarks: Bookmark[] = [
-		{
-			id: 1,
-			name: 'AWS Console',
-			url: 'https://console.aws.amazon.com',
-			iconEmoji: '',
-			color: 'bg-orange-500',
-		},
-	];
 
 	return (
 		<div
@@ -112,7 +100,7 @@ export default function HomePage() {
 				</div>
 
 				{/* 今日の予定セクション */}
-				<TodaySchedule
+				<ScheduleList
 					darkMode={darkMode}
 					todaySchedules={todaySchedules}
 					onScheduleModalOpen={setScheduleModalOpen}
@@ -214,6 +202,7 @@ export default function HomePage() {
 					editingBookmarkId={editingBookmarkId}
 					onEditBookmarkModalOpen={setEditBookmarkModal}
 					editBookmark={editBookmark}
+					deleteBookmark={deleteBookmark}
 				/>
 			)}
 

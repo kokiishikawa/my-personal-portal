@@ -230,6 +230,8 @@ export const useTasks = () => {
 				error instanceof Error ? error.message : 'タスクの更新に失敗しました'
 			);
 			throw error;
+		} finally {
+			setLoading(false);
 		}
 	};
 

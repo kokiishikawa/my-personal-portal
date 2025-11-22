@@ -1,6 +1,6 @@
 'use client';
 
-import { TodyScheduleProps } from '@/types';
+import { TodayScheduleProps } from '@/types';
 import { formatDateTime } from '@/utils/dateUtils';
 import { CalendarDays, Edit, Trash2 } from 'lucide-react';
 import React from 'react';
@@ -14,7 +14,7 @@ const ScheduleList = ({
 	onScheduleModalOpen,
 	deleteSchedule,
 	onEditScheduleOpen,
-}: TodyScheduleProps) => {
+}: TodayScheduleProps) => {
 	// 当日の予定のみ取得して時間が早い順にソート
 	const todaySchedulesFiltered = todaySchedules
 		.filter((schedule) => {

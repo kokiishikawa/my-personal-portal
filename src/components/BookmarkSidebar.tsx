@@ -4,6 +4,19 @@ import React from 'react';
 import { BookmarkProps } from '@/types';
 import { Edit, ExternalLink, Plus, X } from 'lucide-react';
 
+const PRESET_COLORS = [
+	'bg-blue-500',
+	'bg-green-500',
+	'bg-red-500',
+	'bg-yellow-500',
+	'bg-purple-500',
+	'bg-pink-500',
+	'bg-indigo-500',
+	'bg-orange-500',
+	'bg-teal-500',
+	'bg-cyan-500',
+];
+
 /**
  * ブックマークサイドバーを表示するコンポーネント
  */
@@ -68,7 +81,14 @@ const BookmarkSidebar = ({
 						>
 							{/* アイコン */}
 							<div
-								className={`w-12 h-12 ${bookmark.color} rounded-lg flex items-center justify-center text-2xl flex-shrink-0`}
+								className={`w-12 h-12 rounded-lg flex items-center justify-center text-2xl flex-shrink-0 ${
+									PRESET_COLORS.includes(bookmark.color) ? bookmark.color : ''
+								}`}
+								style={
+									!PRESET_COLORS.includes(bookmark.color)
+										? { backgroundColor: bookmark.color }
+										: {}
+								}
 							>
 								{bookmark.iconEmoji}
 							</div>

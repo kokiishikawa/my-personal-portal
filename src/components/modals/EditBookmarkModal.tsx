@@ -20,6 +20,7 @@ const PRESET_COLORS = [
 
 /**
  * ブックマーク編集モーダルコンポーネント
+ * ブックマーク削除
  * サイト名、URL、アイコン、背景色を編集できる
  */
 const EditBookmarkModal = ({
@@ -28,6 +29,7 @@ const EditBookmarkModal = ({
 	editingBookmarkId,
 	onEditBookmarkModalOpen,
 	editBookmark,
+	deleteBookmark,
 }: EditBookmarkModalProps) => {
 	const [name, setName] = useState('');
 	const [url, setUrl] = useState('');
@@ -35,6 +37,7 @@ const EditBookmarkModal = ({
 	const [selectedColor, setSelectedColor] = useState('bg-blue-500');
 	const [customColor, setCustomColor] = useState('#3B82F6');
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
 	// 対象ブックマークを取得
 	const targetBookmark = bookmarks.find((b) => b.id === editingBookmarkId);
@@ -45,12 +48,13 @@ const EditBookmarkModal = ({
 			setName(targetBookmark.name);
 			setUrl(targetBookmark.url);
 			setIconEmoji(targetBookmark.iconEmoji || '');
-			setSelectedColor(targetBookmark.color);
 
 			// カスタムカラーの場合
 			if (!PRESET_COLORS.includes(targetBookmark.color)) {
 				setCustomColor(targetBookmark.color);
 				setSelectedColor('custom');
+			} else {
+				setSelectedColor(targetBookmark.color);
 			}
 		}
 	}, [targetBookmark]);
@@ -237,41 +241,107 @@ const EditBookmarkModal = ({
 				</div>
 
 				{/* アクションボタン */}
-				<div className="flex gap-3">
-					<button
-						onClick={() => {
-							onEditBookmarkModalOpen(false);
-							setShowEmojiPicker(false);
-						}}
-						className={`flex-1 px-4 py-2 border rounded-lg transition-colors ${
-							darkMode
-								? 'border-gray-600 text-gray-300 hover:bg-gray-700'
-								: 'border-gray-300 text-gray-700 hover:bg-gray-50'
-						}`}
-					>
-						キャンセル
-					</button>
-					<button
-						onClick={() => {
-							if (name.trim() && url.trim() && iconEmoji.trim()) {
-								const finalColor =
-									selectedColor === 'custom' ? customColor : selectedColor;
-								editBookmark(targetBookmark.id, {
-									name: name.trim(),
-									url: url.trim(),
-									iconEmoji: iconEmoji.trim(),
-									color: finalColor,
-								});
+				<div className="space-y-3">
+					<div className="flex gap-3">
+						<button
+							onClick={() => {
 								onEditBookmarkModalOpen(false);
 								setShowEmojiPicker(false);
-							}
-						}}
-						className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+							}}
+							className={`flex-1 px-4 py-2 border rounded-lg transition-colors ${
+								darkMode
+									? 'border-gray-600 text-gray-300 hover:bg-gray-700'
+									: 'border-gray-300 text-gray-700 hover:bg-gray-50'
+							}`}
+						>
+							キャンセル
+						</button>
+						<button
+							onClick={() => {
+								if (name.trim() && url.trim() && iconEmoji.trim()) {
+									const finalColor =
+										selectedColor === 'custom' ? customColor : selectedColor;
+									editBookmark(targetBookmark.id, {
+										name: name.trim(),
+										url: url.trim(),
+										iconEmoji: iconEmoji.trim(),
+										color: finalColor,
+									});
+									onEditBookmarkModalOpen(false);
+									setShowEmojiPicker(false);
+								}
+							}}
+							className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+						>
+							保存
+						</button>
+					</div>
+
+					{/* 削除ボタン */}
+					<button
+						onClick={() => setShowDeleteConfirm(true)}
+						className={`w-full px-4 py-2 text-sm rounded-lg transition-colors ${
+							darkMode
+								? 'text-red-400 hover:bg-red-600/10'
+								: 'text-red-500 hover:bg-red-50'
+						}`}
 					>
-						保存
+						このブックマークを削除
 					</button>
 				</div>
 			</div>
+
+			{/* 削除確認モーダル */}
+			{showDeleteConfirm && (
+				<div
+					onClick={() => setShowDeleteConfirm(false)}
+					className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center"
+				>
+					<div
+						onClick={(e) => e.stopPropagation()}
+						className={`rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4 ${
+							darkMode ? 'bg-gray-800' : 'bg-white'
+						}`}
+					>
+						<h4
+							className={`text-lg font-bold mb-2 ${
+								darkMode ? 'text-white' : 'text-gray-800'
+							}`}
+						>
+							ブックマークを削除
+						</h4>
+						<p
+							className={`mb-6 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}
+						>
+							「{targetBookmark.name}」を削除してもよろしいですか？
+							<br />
+							この操作は取り消せません。
+						</p>
+						<div className="flex gap-3">
+							<button
+								onClick={() => setShowDeleteConfirm(false)}
+								className={`flex-1 px-4 py-2 border rounded-lg transition-colors ${
+									darkMode
+										? 'border-gray-600 text-gray-300 hover:bg-gray-700'
+										: 'border-gray-300 text-gray-700 hover:bg-gray-50'
+								}`}
+							>
+								キャンセル
+							</button>
+							<button
+								onClick={() => {
+									deleteBookmark(targetBookmark.id);
+									setShowDeleteConfirm(false);
+									onEditBookmarkModalOpen(false);
+								}}
+								className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+							>
+								削除
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
