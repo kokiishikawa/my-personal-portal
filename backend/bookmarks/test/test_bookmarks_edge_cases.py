@@ -13,7 +13,7 @@ def test_multiple_bookmarks(api_client):
         api_client.post('/api/bookmarks/', {
             'name': f'Bookmark {i}',
             'url': f'https://example{i}.com',
-            'iconImage': 'icon',
+            'iconEmoji': 'icon',
             'color': '#FF0000'
         }, format='json')
     

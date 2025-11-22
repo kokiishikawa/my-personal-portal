@@ -6,7 +6,7 @@ def test_bookmark_crud(api_client):
     res = api_client.post('/api/bookmarks/', {
         'name': 'Test',
         'url': 'https://example.com',  # 正しいURL形式
-        'iconImage': 'iconImage',
+        'iconEmoji': 'iconEmoji',
         'color': '#FF0000'  # 色コード形式
     }, format='json')
     assert res.status_code == 201
@@ -29,7 +29,7 @@ def test_bookmark_crud(api_client):
     res = api_client.put(f'/api/bookmarks/{bookmark_id}/', {
         'name': 'Updated',
         'url': 'https://updated.com',
-        'iconImage': 'Updated iconImage',
+        'iconEmoji': 'Updated iconEmoji',
         'color': '#00FF00'  # スペースを削除
     }, format='json')
     assert res.status_code == 200

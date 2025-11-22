@@ -6,7 +6,7 @@ def test_bookmark_url_validation(api_client):
     res = api_client.post('/api/bookmarks/', {
         'name': 'Test',
         'url': 'invalid-url',  # 不正なURL
-        'iconImage': 'icon',
+        'iconEmoji': 'icon',
         'color': 'red'
     }, format='json')
     assert res.status_code == 400
