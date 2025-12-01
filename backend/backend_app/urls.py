@@ -6,4 +6,5 @@ urlpatterns = [
     path('api/tasks/', include('tasks.urls')),
     path('api/schedules/', include('schedules.urls')),
     path('api/bookmarks/', include('bookmarks.urls')),
+    path('api/', include('users.urls')),
 ]

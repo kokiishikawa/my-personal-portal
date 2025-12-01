@@ -12,3 +12,8 @@ class TaskSerializer(serializers.ModelSerializer):
         
         # 読み取り専用(APIで変更できない)フィールド
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+    def create(self, validated_data):
+        # リクエストユーザーを自動設定
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)

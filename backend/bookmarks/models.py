@@ -1,7 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Bookmark(models.Model):
     """ブックマークモデル"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmark', verbose_name='ユーザー')
     name = models.CharField(max_length=255, verbose_name='名前')
     url = models.URLField(max_length=500, verbose_name='URL')
     iconEmoji = models.CharField(max_length=255, verbose_name='アイコン絵文字')
@@ -14,6 +16,9 @@ class Bookmark(models.Model):
         ordering = ['-created_at']
         verbose_name = 'ブックマーク'
         verbose_name_plural = 'ブックマーク'
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+        ]
 
     def __str__(self):
-        return self.name
+        return f'{self.user.email} - {self.name}'

@@ -1,7 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Schedule(models.Model):
     """スケジュールモデル"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='schedule', verbose_name='ユーザー')
     title = models.CharField(max_length=255, verbose_name='タイトル')
     memo = models.CharField(max_length=255, blank=True, null=True, verbose_name='メモ')
     location = models.CharField(max_length=255, verbose_name='場所')
@@ -14,6 +16,9 @@ class Schedule(models.Model):
         ordering = ['-created_at']
         verbose_name = 'スケジュール'
         verbose_name_plural = 'スケジュール'
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+        ]
 
     def __str__(self):
-        return self.title
+        return f'{self.user.email} - {self.name}'

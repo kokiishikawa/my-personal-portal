@@ -1,7 +1,8 @@
 'use client';
 
 import { HeaderProps } from '@/types';
-import { Menu, Moon, Sun, X } from 'lucide-react';
+import { LogIn, LogOut, Menu, Moon, Sun, User, X } from 'lucide-react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import React from 'react';
 
 /**
@@ -13,6 +14,9 @@ const Header = ({
 	onToggleMenu,
 	isMenuOpen,
 }: HeaderProps) => {
+	const { data: session, status } = useSession();
+	const isLoading = status === 'loading';
+
 	return (
 		<header className={`shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
 			<div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
@@ -26,6 +30,58 @@ const Header = ({
 					</h1>
 				</div>
 				<div className="flex items-center gap-2">
+					{/* ユーザー情報表示 */}
+					{!isLoading && (
+						<>
+							{session ? (
+								<div className="flex items-center gap-2">
+									{/* ユーザー名表示 */}
+									<div
+										className={`flex items-center gap-2 px-3 py-1 rounded-lg ${
+											darkMode ? 'bg-gray-700' : 'bg-gray-100'
+										}`}
+									>
+										<User
+											size={18}
+											className={darkMode ? 'text-gray-300' : 'text-gray-600'}
+										/>
+										<span
+											className={`text-sm ${
+												darkMode ? 'text-gray-300' : 'text-gray-700'
+											}`}
+										>
+											{session.user?.name || session.user?.email}
+										</span>
+									</div>
+									{/* ログアウトボタン */}
+									<button
+										onClick={() => signOut()}
+										className={`p-2 rounded-lg transition-colors ${
+											darkMode
+												? 'hover:bg-gray-700 text-red-400'
+												: 'hover:bg-gray-100 text-red-600'
+										}`}
+										title="ログアウト"
+									>
+										<LogOut size={20} />
+									</button>
+								</div>
+							) : (
+								/* ログインボタン */
+								<button
+									onClick={() => signIn('google')}
+									className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+										darkMode
+											? 'bg-blue-600 hover:bg-blue-700 text-white'
+											: 'bg-blue-500 hover:bg-blue-600 text-white'
+									}`}
+								>
+									<LogIn size={18} />
+									<span>ログイン</span>
+								</button>
+							)}
+						</>
+					)}
 					{/* ダークモードアクションボタン */}
 					<button
 						onClick={onToggleDarkMode}

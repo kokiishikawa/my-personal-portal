@@ -1,4 +1,6 @@
 import { Schedule } from '@/types';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 /**
@@ -22,6 +24,8 @@ import { useState, useEffect } from 'react';
  * @returns {Function} refetch - スケジュール一覧を再取得
  */
 export const useSchedule = () => {
+	const { data: session, status } = useSession();
+	const router = useRouter();
 	const [currentMonth, setCurrentMonth] = useState(new Date());
 	const [todaySchedules, setTodaySchedules] = useState<Schedule[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -33,23 +37,49 @@ export const useSchedule = () => {
 	const [todayDate, setTodayDate] = useState<Date | null>(null);
 
 	/**
+	 * 認証ヘッダーを取得
+	 */
+	const getHeaders = () => {
+		if (!session?.djangoAccessToken) {
+			throw new Error('認証されていません');
+		}
+		return {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${session.djangoAccessToken}`,
+		};
+	};
+
+	/**
 	 * スケジュール一覧を取得
 	 */
 	const fetchSchedules = async () => {
+		// 認証状態をチェック
+		if (status === 'unauthenticated') {
+			router.push('/login');
+			return;
+		}
+
 		setLoading(true);
 		setError(null);
 
 		try {
 			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/schedules/`
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/schedules/`,
+				{
+					headers: getHeaders(),
+				}
 			);
 
 			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
+				if (response.status === 401) {
+					router.push('/login');
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				// throw new Error(`HTTP error! status: ${response.status}`);
 			}
 
 			const data = await response.json();
-			setTodaySchedules(data);
+			setTodaySchedules(Array.isArray(data) ? data : data.results ?? []);
 		} catch (error) {
 			console.error('Failed to fetch schedules:', error);
 			setError(
@@ -82,9 +112,7 @@ export const useSchedule = () => {
 				`${process.env.NEXT_PUBLIC_API_BASE_URL}/schedules/`,
 				{
 					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
+					headers: getHeaders(),
 					body: JSON.stringify({
 						title: schedule.title,
 						memo: schedule.memo,
@@ -95,6 +123,10 @@ export const useSchedule = () => {
 			);
 
 			if (!response.ok) {
+				if (response.status === 401) {
+					router.push('/login');
+					throw new Error('認証に失敗しました。');
+				}
 				const errorData = await response.json();
 				console.error('API Error:', errorData);
 				throw new Error(`HTTP error! status: ${response.status}`);
@@ -141,9 +173,7 @@ export const useSchedule = () => {
 				`${process.env.NEXT_PUBLIC_API_BASE_URL}/schedules/${scheduleId}/`,
 				{
 					method: 'PUT',
-					headers: {
-						'Content-Type': 'application/json',
-					},
+					headers: getHeaders(),
 					body: JSON.stringify({
 						title,
 						memo,
@@ -154,6 +184,10 @@ export const useSchedule = () => {
 			);
 
 			if (!response.ok) {
+				if (response.status === 401) {
+					router.push('/login');
+					throw new Error('認証に失敗しました。');
+				}
 				const errorData = await response.json();
 				console.error('API Error:', errorData);
 				throw new Error(`HTTP error! status: ${response.status}`);
@@ -194,10 +228,15 @@ export const useSchedule = () => {
 				`${process.env.NEXT_PUBLIC_API_BASE_URL}/schedules/${scheduleId}/`,
 				{
 					method: 'DELETE',
+					headers: getHeaders(),
 				}
 			);
 
 			if (!response.ok) {
+				if (response.status === 401) {
+					router.push('/login');
+					throw new Error('認証に失敗しました。');
+				}
 				const errorData = await response.json();
 				console.error('API Error:', errorData);
 				throw new Error(`HTTP error! status: ${response.status}`);
@@ -297,8 +336,10 @@ export const useSchedule = () => {
 
 	// 初回読み込み
 	useEffect(() => {
-		fetchSchedules();
-	}, []);
+		if (status === 'authenticated' && session?.djangoAccessToken) {
+			fetchSchedules();
+		}
+	}, [status, session?.djangoAccessToken]);
 
 	return {
 		// カレンダー関連

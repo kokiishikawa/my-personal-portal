@@ -1,5 +1,7 @@
 import { Task } from '@/types';
+import { useSession } from 'next-auth/react';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 /**
  * タスクを管理するカスタムフック(Django API連携)
@@ -15,24 +17,56 @@ import { useState, useEffect } from 'react';
  * @returns {Function} refetch - タスク一覧を再取得
  */
 export const useTasks = () => {
+	const { data: session, status } = useSession();
+	const router = useRouter();
 	const [tasks, setTasks] = useState<Task[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	/**
+	 * 認証ヘッダーを取得
+	 */
+	const getHeaders = () => {
+		if (!session?.djangoAccessToken) {
+			throw new Error('認証されていません');
+		}
+		return {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${session.djangoAccessToken}`,
+		};
+	};
+
+	/**
 	 * タスク一覧を取得
 	 */
 	const fetchTasks = async () => {
+		// 認証状態をチェック
+		if (status === 'unauthenticated') {
+			router.push('/login');
+			return;
+		}
+
+		if (status === 'loading' || !session?.djangoAccessToken) {
+			return;
+		}
+
 		setLoading(true);
 		setError(null);
 
 		try {
 			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/`
+				`${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/`,
+				{
+					headers: getHeaders(),
+				}
 			);
 
 			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
+				if (response.status === 401) {
+					router.push('/login');
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				// throw new Error(`HTTP error! status: ${response.status}`);
 			}
 
 			const data = await response.json();
@@ -61,9 +95,7 @@ export const useTasks = () => {
 				`${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/`,
 				{
 					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
+					headers: getHeaders(),
 					body: JSON.stringify({
 						title: title,
 						detail: '',
@@ -72,6 +104,10 @@ export const useTasks = () => {
 			);
 
 			if (!response.ok) {
+				if (response.status === 401) {
+					router.push('/login');
+					throw new Error('認証に失敗しました。');
+				}
 				const errorData = await response.json();
 				console.error('API Error:', errorData);
 				throw new Error(`HTTP error! status: ${response.status}`);
@@ -113,9 +149,7 @@ export const useTasks = () => {
 				`${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/${taskId}/`,
 				{
 					method: 'PUT',
-					headers: {
-						'Content-Type': 'application/json',
-					},
+					headers: getHeaders(),
 					body: JSON.stringify({
 						title: title,
 						detail: detail,
@@ -124,6 +158,10 @@ export const useTasks = () => {
 			);
 
 			if (!response.ok) {
+				if (response.status === 401) {
+					router.push('/login');
+					throw new Error('認証に失敗しました。');
+				}
 				const errorData = await response.json();
 				console.error('API Error:', errorData);
 				throw new Error(`HTTP error! status: ${response.status}`);
@@ -159,10 +197,15 @@ export const useTasks = () => {
 				`${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/${taskId}/`,
 				{
 					method: 'DELETE',
+					headers: getHeaders(),
 				}
 			);
 
 			if (!response.ok) {
+				if (response.status === 401) {
+					router.push('/login');
+					throw new Error('認証に失敗しました。');
+				}
 				const errorData = await response.json();
 				console.error('API Error:', errorData);
 				throw new Error(`HTTP error! status: ${response.status}`);
@@ -202,9 +245,7 @@ export const useTasks = () => {
 				`${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/${taskId}/`,
 				{
 					method: 'PATCH',
-					headers: {
-						'Content-Type': 'application/json',
-					},
+					headers: getHeaders(),
 					body: JSON.stringify({
 						done: !task.done,
 					}),
@@ -212,6 +253,10 @@ export const useTasks = () => {
 			);
 
 			if (!response.ok) {
+				if (response.status === 401) {
+					router.push('/login');
+					throw new Error('認証に失敗しました。');
+				}
 				// エラー時は元の状態に戻す
 				setTasks((prev) => prev.map((t) => (t.id === taskId ? task : t)));
 				const errorData = await response.json();
@@ -237,8 +282,10 @@ export const useTasks = () => {
 
 	// 初回読み込み
 	useEffect(() => {
-		fetchTasks();
-	}, []);
+		if (status === 'authenticated' && session?.djangoAccessToken) {
+			fetchTasks();
+		}
+	}, [status, session?.djangoAccessToken]);
 
 	return {
 		tasks,
