@@ -9,33 +9,52 @@
 ## 技術スタック
 
 ### フロントエンド
-- Next.js 14 (App Router)
-- React 18+
-- TypeScript
-- Tailwind CSS
+- Next.js 15.5.4 (App Router)
+- React 19.1.0
+- TypeScript 5.x
+- Tailwind CSS 4.x
+- NextAuth 4.24.13 (Google OAuth 2.0)
+- Lucide React (アイコン)
 
-### バックエンド（今後実装予定）
-- Django 5.x / Django REST Framework
-- PostgreSQL
-- Celery + Redis（定期実行）
-- BeautifulSoup4（スクレイピング）
+### バックエンド
+- Django 5.2.7
+- Django REST Framework 3.16.1
+- Django SimpleJWT 5.3.1
+- PostgreSQL 15
+- Docker / Docker Compose
 
-### インフラ（予定）
+### 認証
+- Google OAuth 2.0
+- NextAuth (フロントエンド)
+- JWT認証 (バックエンド)
+
+### インフラ（開発環境）
+- Docker（PostgreSQL, Django, Next.js）
+- GitHub Actions（CI/CD）
+
+### インフラ（本番環境・予定）
 - Vercel（フロントエンドホスティング）
 - AWS EC2 / RDS / Lambda / Route53
 
 
-## 開発予定
-### Phase 1
-- カレンダー表示（今日の日付ハイライト・月表示）
-- タスク管理（追加・編集・削除、完了管理）
-- メモ機能（作成・更新・削除）
-- 天気情報（現在地の気象データを表示）
+## 実装済み機能
 
-### Phase 2
+### Phase 1（完了）
+- ✅ カレンダー表示（今日の日付ハイライト・月表示・月間移動）
+- ✅ タスク管理（追加・編集・削除、完了管理、楽観的更新）
+- ✅ スケジュール管理（予定の作成・編集・削除、日付フィルタリング）
+- ✅ ブックマーク機能（リンク集管理、カテゴリ別表示、絵文字アイコン）
+- ✅ ダークモード（ライト/ダークモード切り替え、localStorage永続化）
+- ✅ 認証機能（Google OAuth 2.0、NextAuth、Django JWT）
+- ✅ CI/CD（GitHub Actions、pytest自動テスト）
+
+### 今後の開発予定
+
+#### Phase 2
+- 天気情報（現在地の気象データを表示）
+- クイック検索バー（複数検索エンジン対応）
 - 推しブログの更新チェック（スクレイピング + 通知）
 - 習慣トラッカー（連続実行日数の表示）
-- ダークモード（時間帯による自動切り替え）
 
 ## 開発ルール（個人用メモ）
 
@@ -75,41 +94,65 @@
 git clone https://github.com/kokiishikawa/my-personal-portal.git
 cd my-personal-portal
 ```
-### 2. REQUIREMENTS.mdをGitにコミット
-+ プロジェクトの要件定義や開発方針を整理するために `REQUIREMENTS.md` を作成します。
+
+### 2. 環境変数の設定
 ```bash
-# REQUIREMENTS.mdの作成(要件定義書)
-touch REQUIREMENTS.md
+# .envファイルを作成（.env.exampleを参考に）
+cp .env.example .env
 
-# VS Codeで開いて作成
-code REQUIREMENTS.md
-
-# ファイル追加
-git add .
-
-# コミット
-git commit -m "docs: プロジェクト要件を追加"
-
-# Github(mainブランチ)にプッシュ
-git push origin main
+# 以下の環境変数を設定
+# - GOOGLE_CLIENT_ID
+# - GOOGLE_CLIENT_SECRET
+# - NEXTAUTH_SECRET
+# - NEXTAUTH_URL
+# - データベース接続情報
 ```
 
-### 3. Next.js プロジェクト作成
+### 3. Docker環境の起動
 ```bash
-npx create-next-app@latest . --typescript --tailwind --app --eslint
+# Docker Composeでフロントエンド、バックエンド、DBを起動
+docker-compose up -d
 
-✔ Would you like your code inside a src/ directory? … Yes
-✔ Would you like to use Turbopack? (recommended) … Yes
-✔ Would you like to customize the import alias (@/* by default)? … No
+# ログを確認
+docker-compose logs -f
+```
 
-git add .
+### 4. データベースのマイグレーション
+```bash
+# Djangoコンテナに入る
+docker-compose exec web bash
 
-git commit -m "feat: Next.jsプロジェクト初期セットアップ"
+# マイグレーション実行
+python manage.py migrate
 
-git push origin main
+# スーパーユーザー作成（必要に応じて）
+python manage.py createsuperuser
+
+# コンテナから抜ける
+exit
+```
+
+### 5. アプリケーションへのアクセス
+- フロントエンド: http://localhost:3000
+- バックエンドAPI: http://localhost:8000/api
+- Django管理画面: http://localhost:8000/admin
+
+### 6. テストの実行
+```bash
+# バックエンドのテストを実行
+docker-compose exec web pytest
+
+# または、ローカルで実行
+cd backend
+pytest
 ```
 
 ## 更新履歴
+
+### 2025-12-01
+- README更新（実装済み機能の反映）
+- 技術スタックの正確な情報に更新
+- Docker環境のセットアップ手順を追加
 
 ### 2025-10-12
 - README初版作成

@@ -1,7 +1,8 @@
 import pytest
 
 @pytest.mark.django_db
-def test_bookmark_crud(api_client):
+def test_bookmark_crud(authenticated_client):
+    api_client = authenticated_client
     # 作成
     res = api_client.post('/api/bookmarks/', {
         'name': 'Test',

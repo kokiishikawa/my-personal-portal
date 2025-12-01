@@ -2,7 +2,8 @@ import pytest
 from django.utils import timezone
 
 @pytest.mark.django_db
-def test_schedules_crud(api_client):
+def test_schedules_crud(authenticated_client):
+    api_client = authenticated_client
     # 作成
     test_date = timezone.now().isoformat()
     res = api_client.post('/api/schedules/', {
