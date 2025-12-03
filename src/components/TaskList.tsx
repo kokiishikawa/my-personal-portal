@@ -74,7 +74,7 @@ const TaskList = ({
 											e.stopPropagation();
 											onEditTaskOpen(task.id);
 										}}
-										className={`opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
+										className={`opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity p-1 rounded ${
 											darkMode
 												? 'hover:bg-gray-600 text-blue-400'
 												: 'hover:bg-gray-200 text-blue-500'
@@ -90,7 +90,7 @@ const TaskList = ({
 										e.stopPropagation();
 										deleteTask(task.id);
 									}}
-									className={`opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
+									className={`opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity p-1 rounded ${
 										darkMode
 											? 'hover:bg-gray-600 text-red-400'
 											: 'hover:bg-gray-200 text-red-500'

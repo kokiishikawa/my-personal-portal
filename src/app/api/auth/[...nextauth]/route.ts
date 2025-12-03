@@ -13,13 +13,9 @@ const handler = NextAuth({
 		async jwt({ token, account, user }) {
 			// 初回ログイン時（Googleから戻ってきた時）
 			if (account && user) {
-				console.log('Google認証成功');
-				console.log('Email:', user.email);
-				console.log('Google ID Token:', account.id_token);
 
 				try {
 					// Django APIを呼び出し
-					console.log('Djangoにリクエスト送信');
 					const response = await fetch(
 						`${process.env.API_BASE_URL}/auth/google/`,
 						{
@@ -38,8 +34,6 @@ const handler = NextAuth({
 					}
 
 					const djangoData = await response.json();
-					console.log('Django JWT取得成功');
-					console.log('User ID:', djangoData.user.id);
 
 					// Auth.js JWTにDjango JWTを保存
 					return {
@@ -47,12 +41,19 @@ const handler = NextAuth({
 						djangoAccessToken: djangoData.access,
 						djangoRefreshToken: djangoData.refresh,
 						djangoAccessTokenExpires: Date.now() + 15 * 60 * 1000, // 15分後
+						djangoRefreshTokenExpires: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7日
 						userId: djangoData.user.id,
 					};
 				} catch (error) {
 					console.error('Django API呼び出し失敗:', error);
 					return token;
 				}
+			}
+
+			// Refresh Token自体も期限切れかチェック
+			if (Date.now() > (token.djangoRefreshTokenExpires as number)) {
+				console.log('Refresh Token期限切れ - 再ログインが必要');
+				return { ...token, error: 'RefreshTokenExpired' };
 			}
 
 			// 2回目以降（ページ遷移など）

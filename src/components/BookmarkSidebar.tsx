@@ -106,8 +106,8 @@ const BookmarkSidebar = ({
 								{bookmark.name}
 							</a>
 
-							{/* アクションボタン（ホバー時に表示） */}
-							<div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+							{/* アクションボタン（PCではホバー時に表示、スマホでは常時表示） */}
+							<div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
 								{/* 編集ボタン */}
 								{onEditBookmarkOpen && (
 									<button

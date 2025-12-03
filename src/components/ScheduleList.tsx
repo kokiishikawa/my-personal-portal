@@ -139,7 +139,7 @@ const ScheduleList = ({
 														e.stopPropagation();
 														onEditScheduleOpen(schedule.id);
 													}}
-													className={`opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
+													className={`opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
 														darkMode
 															? 'hover:bg-gray-600 text-blue-400'
 															: 'hover:bg-gray-200 text-blue-500'
@@ -151,7 +151,7 @@ const ScheduleList = ({
 											{/* 削除ボタン */}
 											<button
 												onClick={() => deleteSchedule(schedule.id)}
-												className={`opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
+												className={`opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded ${
 													darkMode
 														? 'hover:bg-gray-600 text-red-400'
 														: 'hover:bg-gray-200 text-red-500'

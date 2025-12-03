@@ -244,7 +244,7 @@ export const useTasks = () => {
 			const response = await fetch(
 				`${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/${taskId}/`,
 				{
-					method: 'PATCH',
+					method: 'PUT',
 					headers: getHeaders(),
 					body: JSON.stringify({
 						done: !task.done,

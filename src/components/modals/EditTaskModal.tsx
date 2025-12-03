@@ -74,7 +74,6 @@ const EditTaskModal = ({
 							? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
 							: 'border-gray-300'
 					}`}
-					autoFocus
 				/>
 
 				{/* 詳細入力 */}
